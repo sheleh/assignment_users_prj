@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Users, Groups
+from .models import Profile, Groups
 from .forms import UserForm, GroupForm
 
 
 def all_users(request):
-    users = Users.objects.all()
+    users = Profile.objects.all()
     return render(request, 'users_roles/all_users.html', {'users': users})
 
 
@@ -25,7 +25,7 @@ def create_user(request):
 
 
 def edit_user(request, user_pk):
-    user = get_object_or_404(Users, pk=user_pk)
+    user = get_object_or_404(Profile, pk=user_pk)
     if request.method == 'GET':
         form = UserForm(instance=user)
         return render(request, 'users_roles/edit_user.html', {'user': user, 'form': form})
@@ -39,7 +39,7 @@ def edit_user(request, user_pk):
 
 
 def delete_user(request, user_pk):
-    user = get_object_or_404(Users, pk=user_pk)
+    user = get_object_or_404(Profile, pk=user_pk)
     if request.method == 'POST':
         try:
             user.delete()

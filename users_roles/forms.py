@@ -1,11 +1,11 @@
 from django.forms import ModelForm
-from .models import Users, Groups
+from .models import Profile, Groups
 
 
 class UserForm(ModelForm):
     class Meta:
-        model = Users
-        fields = ['username', 'is_admin', 'group']
+        model = Profile
+        fields = ['username_p', 'is_admin', 'group']
 
 
 class GroupForm(ModelForm):
