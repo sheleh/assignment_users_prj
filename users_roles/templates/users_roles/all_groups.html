@@ -11,6 +11,11 @@
         <th class="text-center">Group description</th>
         <th class="text-center">Actions</th>
     </tr>
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
 {% for group in groups %}
     <tr>
         <th>{{ group.group_name }}</th>

@@ -1,6 +1,27 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Profile, Groups
-from .forms import UserForm, GroupForm
+from .forms import UserForm, GroupForm, LogInForm
+from django.contrib.auth import login, logout, authenticate
+from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
+
+
+def login_user(request):
+    if request.method == 'GET':
+        return render(request, 'users_roles/login_user.html', {'form': LogInForm()})
+    else:
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        if user is None:
+            return render(request, 'users_roles/login_user.html', {'form': LogInForm(), 'error': 'Wrong password'})
+        else:
+            login(request, user)
+            return redirect('all_users')
+
+
+def logout_user(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect('all_users')
 
 
 def all_users(request):
@@ -24,6 +45,7 @@ def create_user(request):
             return render(request, 'users_roles/create_user.html', {'form': UserForm(), 'error': 'Bad data'})
 
 
+@login_required
 def edit_user(request, user_pk):
     user = get_object_or_404(Profile, pk=user_pk)
     if request.method == 'GET':
@@ -38,6 +60,7 @@ def edit_user(request, user_pk):
             return render(request, 'users_roles/edit_user.html', {'error': 'Bad data'})
 
 
+@login_required
 def delete_user(request, user_pk):
     user = get_object_or_404(Profile, pk=user_pk)
     if request.method == 'POST':
@@ -48,8 +71,15 @@ def delete_user(request, user_pk):
 
 
 def all_groups(request):
+    user = request.user
     groups = Groups.objects.all()
-    return render(request, 'users_roles/all_groups.html', {'groups': groups})
+    error = request.session.get('error', None)
+    if error:
+        del request.session['error']
+    if error is not None:
+        return render(request, 'users_roles/all_groups.html', {'groups': groups, 'user': user, 'error': error})
+    else:
+        return render(request, 'users_roles/all_groups.html', {'groups': groups, 'user': user, })
 
 
 def create_group(request):
@@ -81,10 +111,24 @@ def edit_group(request, group_pk):
             return render(request, 'users_roles/edit_group.html', {'error': 'Bad data'})
 
 
+@login_required
 def delete_group(request, group_pk):
+    current_user = request.user
     group = get_object_or_404(Groups, pk=group_pk)
     if request.method == 'POST':
-        try:
-            group.delete()
-        finally:
-            return redirect('all_groups')
+        if current_user.group_id != group.id:
+            try:
+                group.delete()
+            except ValueError:
+                return render(request, 'users_roles/all_groups.html',
+                              {'error': 'Something went wrong!'})
+            except IntegrityError:
+                return render(request, 'users_roles/all_groups.html',
+                              {'error': 'Something went wrong!'})
+            except TypeError:
+                return render(request, 'users_roles/all_groups.html',
+                              {'error': 'Something went wrong!'})
+        else:
+            request.session['error'] = 'You cant delete your own group!'
+            return redirect(all_groups)
+    return redirect(all_groups)

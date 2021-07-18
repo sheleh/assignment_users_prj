@@ -19,6 +19,8 @@ from users_roles import views
 
 urlpatterns = [
     path('admin/', admin.site.urls, name='users'),
+    path('login/', views.login_user, name='login_user'),
+    path('logout/', views.logout_user, name='logout_user'),
     # Users
     path('', views.all_users),
     path('all_users', views.all_users, name='all_users'),
