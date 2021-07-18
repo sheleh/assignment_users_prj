@@ -18,6 +18,7 @@ def login_user(request):
             return redirect('all_users')
 
 
+@login_required
 def logout_user(request):
     if request.method == "POST":
         logout(request)
@@ -82,6 +83,7 @@ def all_groups(request):
         return render(request, 'users_roles/all_groups.html', {'groups': groups, 'user': user, })
 
 
+@login_required
 def create_group(request):
     if request.method == 'GET':
         return render(request, 'users_roles/create_group.html', {'form': GroupForm()})
@@ -97,6 +99,7 @@ def create_group(request):
             return render(request, 'users_roles/create_group.html', {'form': GroupForm(), 'error': 'Bad data'})
 
 
+@login_required
 def edit_group(request, group_pk):
     group = get_object_or_404(Groups, pk=group_pk)
     if request.method == 'GET':
