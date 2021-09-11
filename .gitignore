@@ -4,6 +4,13 @@
 *.pyc
 __pycache__/
 local_settings.py
-db.sqlite3
-db.sqlite3-journal
 media
+env/
+env/bin
+env/include
+env/lib
+venv/
+venv/bin
+venv/include
+venv/lib
+migrations
