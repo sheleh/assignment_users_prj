@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from users_roles import views
 
 urlpatterns = [
@@ -32,4 +32,6 @@ urlpatterns = [
     path('create_group', views.create_group, name='create_group'),
     path('edit_group/<int:group_pk>', views.edit_group, name='edit_group'),
     path('group/<int:group_pk>/delete', views.delete_group, name='delete_group'),
+    # API
+    path('api/', include('api.urls')),
 ]
